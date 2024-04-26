@@ -26,7 +26,11 @@ const RegistrationForm = () => {
       height: parseFloat(formData.get('height')),
       weight: parseFloat(formData.get('weight')),
     };
-    PlayerAPI.createPlayer(data)
+    try{
+     const responce = await PlayerAPI.createPlayer(data);
+    }catch (err){
+      console.log(err.message);
+    }
   };
 
 
