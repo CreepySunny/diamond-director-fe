@@ -2,9 +2,9 @@ import './App.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import RegistrationPage from './Pages/RegistrationPage';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import LayoutPage from './Pages/LayoutPage';
 import HomePage from './Pages/HomePage';
 import NoPage from './Pages/NoPage';
+import LoginPage from './Pages/LoginPage';
 
 function App() {
 
@@ -14,6 +14,7 @@ function App() {
     <Routes>
         <Route path='/' element={<HomePage/>}/>
         <Route path='register' element={<RegistrationPage/>} />
+        <Route path='login' element={<LoginPage/>} />
         <Route path='*' element={<NoPage/>}/>
     </Routes>
     </BrowserRouter>
