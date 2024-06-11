@@ -14,4 +14,4 @@ ENV NODE_ENV=production
 
 RUN npm run build
 
-CMD ["npm", "run", "serve"]
+CMD [ "npm", "run", "preview" ]
