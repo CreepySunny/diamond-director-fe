@@ -39,7 +39,7 @@ const RegistrationForm = () => {
       if (response.status === 201) {
         setReturnMessage('Coach account successfully created!');
         setTimeout(() => {
-          navigate('/');
+          navigate('/games');
         }, 3000); 
       } else if (response.status === 400) {
         setReturnMessage('[!] Error: ' + response.statusText);
@@ -73,7 +73,6 @@ const RegistrationForm = () => {
         position: formData.get('position'),
         height: parseFloat(formData.get('height')),
         weight: parseFloat(formData.get('weight')),
-        role: 'COACH',
       };
       await handleSubmitPlayer(playerData);
     } else if (accountType === 'coach') {
@@ -81,7 +80,6 @@ const RegistrationForm = () => {
         ...commonData,
         canScoreKeep: isScorekeeper,
         position: formData.get('coachPosition'),
-        role: 'COACH',
       };
       await handleSubmitCoach(coachData);
     }
