@@ -1,4 +1,5 @@
 import axios from "axios";
+import React from "react";
 
 const getAuthHeaders = (token) => ({
     headers: {
@@ -9,29 +10,8 @@ const getAuthHeaders = (token) => ({
 const CoachAPI = {
     createCoach: (newCoach) => axios.post("http://localhost:8080/coach", newCoach),
 
-    findCoachesFromTeamName: (teamName, token) => {
-        return axios.get(`http://localhost:8080/coach/team/${teamName}`, getAuthHeaders(token))
-            .then(response => ({
-                exception: null,
-                coaches: response.data
-            }))
-            .catch(error => ({
-                exception: error,
-                coaches: []
-            }));
-    },
+    findCoachesFromTeamName: (teamName, token) => axios.get(`http://localhost:8080/coach/team/${teamName}`, getAuthHeaders(token)),
 
-    findCoachNoTeam: (token) => {
-        return axios.get("http://localhost:8080/coaches/no-team", getAuthHeaders(token))
-            .then(response => ({
-                exception: null,
-                coaches: response.data
-            }))
-            .catch(error => ({
-                exception: error,
-                coaches: []
-            }));
-    }
+    findCoachNoTeam: (token) => axios.get("http://localhost:8080/coach/no-team", getAuthHeaders(token))
 }
-
 export default CoachAPI;
