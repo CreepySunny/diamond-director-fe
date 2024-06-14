@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Form, Button, Container, Row, Col } from 'react-bootstrap';
-import LoginAPI from "../api/LoginAPI";
 import { useNavigate } from 'react-router-dom';
+import LoginAPI from '../api/LoginAPI';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
@@ -19,17 +19,21 @@ const LoginForm = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const data = {
-      email: email,
-      password: password
-    } 
-    
-    try{
-      const response = await LoginAPI.loginUser(data);    
-      sessionStorage.setItem("token", response.data.accessToken)
-      navigate("/")
-    }catch (err){
-      console.log(err.message);
+    try {
+      const loginCreds = {
+        email: email,
+        password: password
+      };
+
+      const response = await LoginAPI.loginUser(loginCreds);
+      if (response.data.accessToken) {
+        sessionStorage.setItem('token', response.data.accessToken);
+        navigate('/');
+      } else {
+        console.log('Login failed: No access token in response.');
+      }
+    } catch (err) {
+      console.error('Login failed:', err.message);
     }
   };
 
@@ -39,13 +43,14 @@ const LoginForm = () => {
         <Col md="6">
           <h2 className="text-center">Login</h2>
           <Form onSubmit={handleSubmit}>
-            <Form.Group controlId="formEmai">
+            <Form.Group controlId="formEmail">
               <Form.Label>Email</Form.Label>
               <Form.Control
-                type="text"
+                type="email"
                 placeholder="Enter email"
                 value={email}
                 onChange={handleUsernameChange}
+                required
               />
             </Form.Group>
 
@@ -56,10 +61,11 @@ const LoginForm = () => {
                 placeholder="Password"
                 value={password}
                 onChange={handlePasswordChange}
+                required
               />
             </Form.Group>
 
-            <Button variant="primary" type="submit" block>
+            <Button variant="primary" type="submit" className="w-100">
               Login
             </Button>
           </Form>
