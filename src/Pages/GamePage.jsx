@@ -1,43 +1,43 @@
 import React, { useState, useEffect } from 'react';
-import { jwtDecode } from "jwt-decode";
-import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 import ScoreKeeper from '../component/ScoreKeeper';
 import NavigationBar from '../component/Navbar';
 import GameList from '../component/GameList';
 import CreateGameForm from '../component/CreateGameForm';
 import GameAPI from '../api/GameAPI';
+import { Button } from 'react-bootstrap';
 
-function ScoreKeepersPage() {
+function GamePage() {
   const [games, setGames] = useState([]);
   const [selectedGame, setSelectedGame] = useState(null);
+  const [showCreateForm, setShowCreateForm] = useState(false);
 
   useEffect(() => {
     const token = sessionStorage.getItem('token');
     if (token) {
       const decodedToken = jwtDecode(token);
-      const userId = decodedToken.userId;
-      fetchGames(userId);
+      const userEmail = decodedToken.sub;
+      fetchGames(userEmail, token);
     }
   }, []);
 
-  const fetchGames = async (userId) => {
-    try {
-      const response = await axios.get(`http://localhost:8080/game/${userId}/all`, {
-        headers: {
-          Authorization: `Bearer ${sessionStorage.getItem('token')}`,
-        },
+  const fetchGames = (userEmail, token) => {
+    GameAPI.getAllGamesFromUserEmail(userEmail, token)
+      .then(response => {
+        setGames(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching games:', error);
       });
-      setGames(response.data);
-    } catch (error) {
-      console.error('Error fetching games:', error);
-    }
   };
 
   const handleCreateGame = async (newGame) => {
     try {
-      const response = await GameAPI.createGame(newGame);
+      const token = sessionStorage.getItem('token');
+      const response = await GameAPI.createGame(newGame, token);
       const createdGame = { ...newGame, gameId: response.data };
       setGames([...games, createdGame]);
+      setShowCreateForm(false);
     } catch (error) {
       console.error('Error creating game:', error);
     }
@@ -50,13 +50,18 @@ function ScoreKeepersPage() {
   return (
     <div className="container">
       <NavigationBar />
-      <h1>Baseball Scorekeeping App</h1>
+      <h1>Games</h1>
       <div className="row">
         <div className="col">
-          <GameList games={games} onCreateGame={handleCreateGame} onSelectGame={handleSelectGame} />
+          {games.length > 0 && (
+            <GameList games={games} onCreateGame={handleCreateGame} onSelectGame={handleSelectGame} />
+          )}
+          {games.length === 0 && (
+            <Button variant="primary" onClick={() => setShowCreateForm(true)}>Create Game</Button>
+          )}
         </div>
         <div className="col">
-          <CreateGameForm onCreateGame={handleCreateGame} />
+          {showCreateForm && <CreateGameForm onCreateGame={handleCreateGame} />}
         </div>
         <div className="col">
           {selectedGame && <ScoreKeeper game={selectedGame} />}
@@ -66,4 +71,4 @@ function ScoreKeepersPage() {
   );
 }
 
-export default ScoreKeepersPage;
+export default GamePage;
