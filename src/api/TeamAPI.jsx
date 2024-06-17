@@ -2,30 +2,31 @@ import axios from "axios";
 
 const getAuthHeaders = (token) => ({
     headers: {
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
     }
 });
 
 const TeamAPI = {
-    createTeam: (createCoachUserEmail, teamName, token) => axios.post(
+    createTeam: (newTeam, token) => axios.post(
         "http://localhost:8080/team",
-        { createCoachUserEmail, teamName },
+        newTeam ,
         getAuthHeaders(token)
-    )
-        .then(response => ({
-            teamId: response.data
-        }))
-        .catch(error => {
-            throw new Error(`Failed to create team: ${error.message}`);
-        }),
+    ),
 
     findTeamFromUserEmail: (email, token) => axios.get(`http://localhost:8080/team/${email}`, getAuthHeaders(token)),
 
-    findAllTeams: (token) => axios.get("http://localhost:8080/teams", getAuthHeaders(token)),
+    findAllTeams: (token) => axios.get("http://localhost:8080/team", getAuthHeaders(token)),
 
     assignCoachToTeam: (teamName, coachId, token) => axios.put(
-        "http://localhost:8080/team",
+        "http://localhost:8080/team/assign/coach",
         { teamName, coachId },
+        getAuthHeaders(token)
+    ),
+
+    assignPlayerToTeam: (teamName, playerId, token) => axios.put(
+        "http://localhost:8080/team/assign/player",
+        { teamName, playerId },
         getAuthHeaders(token)
     )
 }
