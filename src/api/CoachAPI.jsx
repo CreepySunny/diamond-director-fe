@@ -3,7 +3,8 @@ import React from "react";
 
 const getAuthHeaders = (token) => ({
     headers: {
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
     }
 });
 
