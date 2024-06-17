@@ -1,35 +1,48 @@
-// src/WebSocketService.js
-import SockJS from 'sockjs-client';
-import { CompatClient, Stomp } from '@stomp/stompjs';
+import { Client } from '@stomp/stompjs';
 
 class WebSocketService {
     constructor() {
-        this.stompClient = null;
+        this.client = null;
     }
 
-    connect(onMessageReceived) {
-        const socket = new SockJS('/ws');
-        this.stompClient = Stomp.over(socket);
-        this.stompClient.connect({}, () => {
-            console.log('Connected to WebSocket');
-        }, (error) => {
-            console.error('Error connecting to WebSocket:', error);
+    connect(gameId, onMessageReceived) {
+        this.client = new Client({
+            brokerURL: 'ws://localhost:8080/ws',
+            reconnectDelay: 5000,
+            heartbeatIncoming: 4000,
+            heartbeatOutgoing: 4000,
+            debug: (str) => {
+                console.log(new Date(), str);
+            }
         });
-    }
 
-    subscribe(gameId, onMessageReceived) {
-        if (this.stompClient && this.stompClient.connected) {
-            this.stompClient.subscribe(`/topic/game/${gameId}`, (message) => {
-                onMessageReceived(JSON.parse(message.body));
+        this.client.onConnect = () => {
+            console.log('Connected to WebSocket');
+            this.client.subscribe(`/game/${gameId}`, (data) => {
+                const scoreUpdate = JSON.parse(data.body);
+                onMessageReceived(scoreUpdate);
             });
-        } else {
-            console.error('WebSocket connection is not established.');
-        }
+        };
+
+        this.client.onStompError = (frame) => {
+            console.error('Broker reported error: ' + frame.headers['message']);
+            console.error('Additional details: ' + frame.body);
+        };
+
+        this.client.onWebSocketClose = () => {
+            console.log('WebSocket connection closed');
+        };
+
+        this.client.onWebSocketError = (error) => {
+            console.error('WebSocket error:', error);
+        };
+
+        this.client.activate();
     }
 
     disconnect() {
-        if (this.stompClient !== null) {
-            this.stompClient.disconnect();
+        if (this.client) {
+            this.client.deactivate();
             console.log('Disconnected from WebSocket');
         }
     }
