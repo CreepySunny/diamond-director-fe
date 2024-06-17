@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import TeamAPI from '../api/TeamAPI';
+import { jwtDecode } from 'jwt-decode';
 
-const CreateTeamForm = (user) => {
-  const [teamName, setTeamName] = useState('');
+const CreateTeamForm = () => {
+  const [teamNameState, setteamNameState] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const user = jwtDecode(sessionStorage.getItem('token'));
 
   const handleInputChange = (e) => {
-    setTeamName(e.target.value);
+    setteamNameState(e.target.value);
   };
 
   const handleSubmit = (e) => {
@@ -16,10 +18,17 @@ const CreateTeamForm = (user) => {
     setErrorMessage('');
     setSuccessMessage('');
 
-    TeamAPI.createTeam(user.sub, teamName, sessionStorage.getItem("token"))
+    console.log(user);
+
+    const newTeam = {
+      createCoachUserEmail: user.sub,
+      teamName: teamNameState
+    };
+
+    TeamAPI.createTeam(newTeam, sessionStorage.getItem("token"))
       .then(() => {
         setSuccessMessage(`Team created successfully!`);
-        setTeamName('');
+        setteamNameState('');
       })
       .catch(error => {
         setErrorMessage(`Failed to create team: ${error.message}`);
@@ -30,12 +39,12 @@ const CreateTeamForm = (user) => {
     <div>
       <h2>Create New Team</h2>
       <Form onSubmit={handleSubmit}>
-        <Form.Group controlId="teamName">
+        <Form.Group controlId="teamNameState">
           <Form.Label>Team Name</Form.Label>
           <Form.Control
             type="text"
             placeholder="Enter team name"
-            value={teamName}
+            value={teamNameState}
             onChange={handleInputChange}
             required
           />

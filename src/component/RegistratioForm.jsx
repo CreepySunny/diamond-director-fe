@@ -39,7 +39,7 @@ const RegistrationForm = () => {
       if (response.status === 201) {
         setReturnMessage('Coach account successfully created!');
         setTimeout(() => {
-          navigate('/games');
+          navigate('/team');
         }, 3000); 
       } else if (response.status === 400) {
         setReturnMessage('[!] Error: ' + response.statusText);

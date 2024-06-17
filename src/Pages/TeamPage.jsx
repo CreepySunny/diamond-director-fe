@@ -5,6 +5,7 @@ import TeamCoachList from "../component/TeamCoachList";
 import CreateTeamForm from "../component/CreateTeamForm";
 import TeamAPI from "../api/TeamAPI";
 import { jwtDecode } from 'jwt-decode';
+import TeamPlayerList from "../component/TeamPlayerList";
 
 function TeamPage(){
   const user = jwtDecode(sessionStorage.getItem('token'));
@@ -36,9 +37,12 @@ function TeamPage(){
       <NavigationBar />
       <Container>
         {team ? (
-          <TeamCoachList teamName={team.teamName} />
+          <>
+            <TeamCoachList teamName={team.teamName} />
+            <TeamPlayerList teamName={team.teamName} />
+          </>
         ) : (
-          <CreateTeamForm user={user} />
+          <CreateTeamForm/>
         )}
       </Container>
     </>

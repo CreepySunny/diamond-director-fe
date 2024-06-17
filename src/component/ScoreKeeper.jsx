@@ -1,34 +1,45 @@
-import React, { useState } from 'react';
-import { Container, Form, Button, Alert, Row, Col } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Container, Form, Button, Alert } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import GameAPI from '../api/GameAPI';
 
-const PlayResult = {
-  SINGLE: "1B",
-  DOUBLE: "2B",
-  TRIPLE: "3B",
-  HOME_RUN: "HR",
-  STRIKEOUT: "K",
-  SACRIFICE_FLY: "SF",
-  ERROR: "E",
-  GROUNDOUT: "GO",
-  FLYOUT: "FO",
-  LINEOUT: "LO",
-  POP_OUT: "PO",
-  FIELDERS_CHOICE: "FC",
-  WALK: "BB",
-  NON_INTENTIONAL_WALK: "NIBB",
-  INTENTIONAL_WALK: "IBB",
-  HIT_BY_PITCH: "HBP"
-};
+import PlayResult from '../Const/PlayResult';
+import PlayerPosition from '../Const/PlayerPosition';
 
-const ScoreKeeper = () => {
+const ScoreKeeper = ({ game }) => {
   const [batter, setBatter] = useState('');
   const [pitcher, setPitcher] = useState('');
   const [inning, setInning] = useState('');
-  const [half, setHalf] = useState('top');
+  const [half, setHalf] = useState('TOP');
   const [playType, setPlayType] = useState('');
   const [playDetail, setPlayDetail] = useState('');
-  const [positions, setPositions] = useState('');
+  const [selectedPositions, setSelectedPositions] = useState([]);
+  const [gameDetails, setGameDetails] = useState(null);
+  const [players, setPlayers] = useState([]);
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+
+  useEffect(() => {
+    if (game.gameId) {
+      const token = sessionStorage.getItem('token');
+      GameAPI.getGameByGameId(game.gameId, token)
+        .then(response => {
+          console.log(response.data);
+          setGameDetails(response.data);
+        })
+        .catch(error => {
+          console.error('Error fetching game details:', error);
+        });
+      GameAPI.getAllPlayersFromGameId(game.gameId, token)
+        .then(response => {
+          console.log(response.data);
+          setPlayers(response.data);
+        })
+        .catch(error => {
+          console.error('Error fetching players:', error);
+        });
+    }
+  }, [game]);
 
   const handlePlayTypeClick = (type) => {
     setPlayType(type);
@@ -39,10 +50,64 @@ const ScoreKeeper = () => {
     setPlayDetail(PlayResult[detail]);
   };
 
+  const handlePositionChange = (position) => {
+    setSelectedPositions((prevPositions) => {
+      if (prevPositions.includes(position)) {
+        return prevPositions.filter(pos => pos !== position);
+      } else {
+        return [...prevPositions, position];
+      }
+    });
+  };
+
+  const handleSubmitScore = () => {
+    const token = sessionStorage.getItem('token');
+    const scoreRequest = {
+      inning: parseInt(inning),
+      half,
+      gameId: game.gameId,
+      batterId: parseInt(batter),
+      pitcherId: parseInt(pitcher),
+      playShorthand: playDetail,
+      fieldersPositions: selectedPositions
+    };
+
+    GameAPI.addNewGameScore(scoreRequest, token)
+      .then(response => {
+        console.log(response.data);
+        setSuccessMessage('Score updated successfully!');
+      })
+      .catch(error => {
+        console.error('Error updating score:', error);
+        setError('Error updating score.');
+      });
+  };
+
+  const isFormValid = () => {
+    return (
+      inning &&
+      half &&
+      game.gameId &&
+      batter &&
+      pitcher &&
+      playDetail &&
+      selectedPositions.length > 0
+    );
+  };
+
   return (
     <Container>
       <h2>Baseball Scorekeeper</h2>
-      
+
+      {gameDetails && (
+        <div>
+          <h3>Game Details</h3>
+          <p>Season: {gameDetails.season}</p>
+          <p>Home Team: {gameDetails.homeTeamName}</p>
+          <p>Away Team: {gameDetails.awayTeamName}</p>
+        </div>
+      )}
+
       <Form.Group className="mb-3">
         <Form.Label>Select Batter</Form.Label>
         <Form.Control
@@ -51,13 +116,14 @@ const ScoreKeeper = () => {
           onChange={(e) => setBatter(e.target.value)}
         >
           <option value="">Select a Batter</option>
-          <option value="batter1">Batter 1</option>
-          <option value="batter2">Batter 2</option>
-          {/* Add more batters as needed */}
+          {players.map(player => (
+            <option key={player.id} value={player.id}>
+              {player.position}: {player.firstName} {player.lastName}
+            </option>
+          ))}
         </Form.Control>
       </Form.Group>
 
-      {/* Pitcher Dropdown */}
       <Form.Group className="mb-3">
         <Form.Label>Select Pitcher</Form.Label>
         <Form.Control
@@ -66,13 +132,14 @@ const ScoreKeeper = () => {
           onChange={(e) => setPitcher(e.target.value)}
         >
           <option value="">Select a Pitcher</option>
-          <option value="pitcher1">Pitcher 1</option>
-          <option value="pitcher2">Pitcher 2</option>
-          {/* Add more pitchers as needed */}
+          {players.map(player => (
+            <option key={player.id} value={player.id}>
+              {player.position}: {player.firstName} {player.lastName}
+            </option>
+          ))}
         </Form.Control>
       </Form.Group>
 
-      {/* Inning and Half Inputs */}
       <Form.Group className="mb-3">
         <Form.Label>Inning</Form.Label>
         <Form.Control
@@ -92,7 +159,7 @@ const ScoreKeeper = () => {
             name="halfOptions"
             id="topHalf"
             value="top"
-            checked={half === 'top'}
+            checked={half === 'TOP'}
             onChange={(e) => setHalf(e.target.value)}
           />
           <Form.Check
@@ -102,13 +169,12 @@ const ScoreKeeper = () => {
             name="halfOptions"
             id="bottomHalf"
             value="bottom"
-            checked={half === 'bottom'}
+            checked={half === 'BOTTOM'}
             onChange={(e) => setHalf(e.target.value)}
           />
         </div>
       </Form.Group>
 
-      {/* Play Outcome Buttons */}
       <Form.Group className="mb-3">
         <Form.Label>Play Outcome</Form.Label>
         <div>
@@ -118,7 +184,6 @@ const ScoreKeeper = () => {
         </div>
       </Form.Group>
 
-      {/* Detailed Play Options */}
       {playType && (
         <Form.Group className="mb-3">
           <Form.Label>Detailed Play</Form.Label>
@@ -154,22 +219,42 @@ const ScoreKeeper = () => {
         </Form.Group>
       )}
 
-      {/* Positions Input */}
       <Form.Group className="mb-3">
         <Form.Label>Positions Touched</Form.Label>
-        <Form.Control
-          type="text"
-          value={positions}
-          onChange={(e) => setPositions(e.target.value)}
-          placeholder="e.g., 1B, 2B, SS, OF"
-        />
+        {PlayerPosition.map(position => (
+          <Form.Check
+            type="checkbox"
+            key={position}
+            label={position.replace('_', ' ')}
+            value={position}
+            checked={selectedPositions.includes(position)}
+            onChange={() => handlePositionChange(position)}
+          />
+        ))}
       </Form.Group>
 
-      {/* Display selected play result */}
       {playDetail && (
         <Alert variant="info">
           Selected Play: {playDetail}
         </Alert>
+      )}
+
+      {error && (
+        <Alert variant="danger">
+          {error}
+        </Alert>
+      )}
+
+      {successMessage && (
+        <Alert variant="success">
+          {successMessage}
+        </Alert>
+      )}
+
+      {isFormValid() && (
+        <Button variant="success" onClick={handleSubmitScore}>
+          Submit Score
+        </Button>
       )}
     </Container>
   );
