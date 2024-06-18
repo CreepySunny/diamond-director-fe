@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Card, Form, Dropdown, DropdownButton } from 'react-bootstrap';
-import { Pie } from 'react-chartjs-2';
 import PlayerAPI from '../api/PlayerAPI';
 import AuthContext from '../Auth/AuthContext';
+import PlayerPosition from '../Const/PlayerPosition';
 
-const PlayerPerFieldPositionStatisticsPitcher = ({ positions }) => {
+const PlayerPerFieldPositionStatisticsPitcher = () => {
   const [selectedPosition, setSelectedPosition] = useState(null);
   const [loading, setLoading] = useState(false);
   const [pitchingStats, setPitchingStats] = useState(null);
   const { user } = useContext(AuthContext);
+  const positions = PlayerPosition;
 
   useEffect(() => {
     if (selectedPosition) {
@@ -34,26 +35,6 @@ const PlayerPerFieldPositionStatisticsPitcher = ({ positions }) => {
 
   const handlePositionSelect = (position) => {
     setSelectedPosition(position);
-  };
-
-  const renderPieChart = () => {
-    if (!statistics || !statistics.percentageToPlayerPosition) {
-      return null;
-    }
-
-    const data = {
-      labels: ['Percentage of Plays to field position', 'Rest'],
-      datasets: [
-        {
-          label: 'Percentage of Plays to field position',
-          data: [statistics.percentageToPlayerPosition, 100 - statistics.percentageToPlayerPosition],
-          backgroundColor: ['#36A2EB', '#FF6384'],
-          hoverBackgroundColor: ['#36A2EB', '#FF6384'],
-        },
-      ],
-    };
-
-    return <Pie data={data} />;
   };
 
   return (
@@ -101,9 +82,8 @@ const PlayerPerFieldPositionStatisticsPitcher = ({ positions }) => {
                 <div className="mb-3">
                   <strong>HR9:</strong> {pitchingStats.hr9}
                 </div>
-                <div style={{ height: '300px' }}>
-                  <strong>Percentage to Player Position:</strong>
-                  {renderPieChart()}
+                <div className="mb-3">
+                  <strong>Percentage to fielding position:</strong> {pitchingStats.percentageToPlayerPosition}%
                 </div>
               </>
             )}
