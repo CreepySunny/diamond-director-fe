@@ -28,7 +28,9 @@ const TeamAPI = {
         "http://localhost:8080/team/assign/player",
         { teamName, playerId },
         getAuthHeaders(token)
-    )
+    ),
+
+    deleteTeamByTeamId: (id, token) => axios.delete(`http://localhost:8080/team/${id}`, getAuthHeaders(token))
 }
 
 export default TeamAPI;
