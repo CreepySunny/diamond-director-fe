@@ -7,7 +7,6 @@ const PrivateRoute = ({ children, requiredRole }) => {
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    console.log('PrivateRoute - User context:', user);
     setIsInitialized(true);
   }, [user]);
 
@@ -16,19 +15,16 @@ const PrivateRoute = ({ children, requiredRole }) => {
   }
 
   if (!user) {
-    console.log('PrivateRoute - User is null. Redirecting to login.');
     return <Navigate to="/login" />;
   }
 
   const currentTime = Date.now() / 1000;
   if (user.exp < currentTime) {
-    console.log('PrivateRoute - Token expired. Logging out and redirecting to login.');
     logout();
     return <Navigate to="/login" />;
   }
 
   if (requiredRole && !hasRole(requiredRole)) {
-    console.log('PrivateRoute - User does not have required role. Redirecting to unauthorized.');
     return <Navigate to="/unauthorized" />;
   }
 
