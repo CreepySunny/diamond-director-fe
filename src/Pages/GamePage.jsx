@@ -13,6 +13,7 @@ function GamePage() {
   const [games, setGames] = useState([]);
   const [selectedGame, setSelectedGame] = useState(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const token = sessionStorage.getItem('token');
 
   useEffect(() => {
       fetchGames(user.sub, token);
