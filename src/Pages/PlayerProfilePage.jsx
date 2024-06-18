@@ -7,7 +7,6 @@ import BattingStatistics from '../component/BattingStatistics';
 import PlayerAPI from '../api/PlayerAPI';
 import AuthContext from '../Auth/AuthContext';
 import NavigationBar from '../component/Navbar';
-import PlayerPosition from '../Const/PlayerPosition';
 import PitchingStatistics from '../component/PitchingStatistics';
 
 const PlayerProfilePage = () => {
@@ -80,13 +79,9 @@ const PlayerProfilePage = () => {
             {player.position === 'Pitcher' ||
              player.position === 'Reliever' ||
              player.position === 'Starter' ? (
-              <PlayerPerFieldPositionStatisticsPitcher
-                positions={PlayerPosition}
-              />
+              <PlayerPerFieldPositionStatisticsPitcher />
             ) : (
-              <PlayerPerFieldPositionStatisticsBatter
-                positions={PlayerPosition}
-              />
+              <PlayerPerFieldPositionStatisticsBatter />
             )}
           </Col>
         </Row>
