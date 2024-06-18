@@ -1,5 +1,7 @@
 import axios from "axios";
 
+const baseURL = "http://localhost:8080";
+
 const getAuthHeaders = (token) => ({
     headers: {
         Authorization: `Bearer ${token}`,
@@ -8,11 +10,17 @@ const getAuthHeaders = (token) => ({
 });
 
 const PlayerAPI = {
-    createPlayer: (newPlayer) => axios.post("http://localhost:8080/player", newPlayer),
+    createPlayer: (newPlayer) => axios.post(`${baseURL}/player`, newPlayer),
 
-    findPlayersFromTeamName: (teamName, token) => axios.get(`http://localhost:8080/player/team/${teamName}`, getAuthHeaders(token)),
+    getPlayerById: (id, token) => axios.get(`${baseURL}/player/${id}`, getAuthHeaders(token)),
 
-    findPlayersNoTeam: (token) => axios.get("http://localhost:8080/player/no-team", getAuthHeaders(token))
-}
+    getAllPlayersWithNoTeam: (token) => axios.get(`${baseURL}/player/no-team`, getAuthHeaders(token)),
+
+    getPlayersFromTeamName: (teamName, token) => axios.get(`${baseURL}/player/team/${teamName}`, getAuthHeaders(token)),
+
+    getBattingStatsByPlayerId: (id, token) => axios.get(`${baseURL}/player/${id}/batting`, getAuthHeaders(token)),
+
+    getPitchingStatsByPlayerId: (id, token) => axios.get(`${baseURL}/player/${id}/pitching`, getAuthHeaders(token))
+};
 
 export default PlayerAPI;
