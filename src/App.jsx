@@ -11,6 +11,7 @@ import GameScorePage from './Pages/GameScoresPage';
 import PrivateRoute from './Auth/PrivateRoute';
 import Unauthorized from './Pages/Unauthorized';
 import { AuthProvider } from './Auth/AuthContext';
+import PlayerProfilePage from './Pages/PlayerProfilePage';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path='/login' element={<LoginPage />} />
           <Route path='/game' element={<PrivateRoute requiredRole="COACH"><GamePage /></PrivateRoute>} />
           <Route path='/team' element={<PrivateRoute requiredRole="COACH"><TeamPage /></PrivateRoute>} />
+          <Route path='/player' element={<PrivateRoute requiredRole="PLAYER"><PlayerProfilePage /></PrivateRoute>} />
           <Route path='/live' element={<GameScorePage />} />
           <Route path='/unauthorized' element={<Unauthorized />} />
           <Route path='*' element={<NoPage />} />
