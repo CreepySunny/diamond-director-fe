@@ -20,7 +20,13 @@ const PlayerAPI = {
 
     getBattingStatsByPlayerId: (id, token) => axios.get(`${baseURL}/player/${id}/batting`, getAuthHeaders(token)),
 
-    getPitchingStatsByPlayerId: (id, token) => axios.get(`${baseURL}/player/${id}/pitching`, getAuthHeaders(token))
+    getPitchingStatsByPlayerId: (id, token) => axios.get(`${baseURL}/player/${id}/pitching`, getAuthHeaders(token)),
+
+    getFieldPositionSpecificBattingStats: (playerUserId, position, token) => 
+        axios.get(`${baseURL}/player/${playerUserId}/${position}/batting`, getAuthHeaders(token)),
+
+    getFieldPositionSpecificPitchingStats: (playerUserId, position, token) => 
+        axios.get(`${baseURL}/player/${playerUserId}/${position}/pitching`, getAuthHeaders(token))
 };
 
 export default PlayerAPI;
