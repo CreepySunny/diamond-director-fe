@@ -1,11 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Container, Row, Col, Spinner } from 'react-bootstrap';
 import PlayerBasicInfo from '../component/PlayerBasicInfo';
+import PlayerPerFieldPositionStatisticsPitcher from '../component/PlayerPerFieldPositionStatisticsPitcher';
+import PlayerPerFieldPositionStatisticsBatter from '../component/PlayerPerFieldPositionStatisticsBatter';
 import BattingStatistics from '../component/BattingStatistics';
-import PitchingStatistics from '../component/PitchingStatistics';
 import PlayerAPI from '../api/PlayerAPI';
 import AuthContext from '../Auth/AuthContext';
 import NavigationBar from '../component/Navbar';
+import PlayerPosition from '../Const/PlayerPosition';
+import PitchingStatistics from '../component/PitchingStatistics';
 
 const PlayerProfilePage = () => {
   const [player, setPlayer] = useState(null);
@@ -20,14 +23,20 @@ const PlayerProfilePage = () => {
         const playerResponse = await PlayerAPI.getPlayerById(user.userId, sessionStorage.getItem('token'));
         setPlayer(playerResponse.data);
 
-        const battingStatsResponse = await PlayerAPI.getBattingStatsByPlayerId(user.userId, sessionStorage.getItem('token'));
-        setBattingStats(battingStatsResponse.data);
-
-        if (playerResponse.data.position === 'Pitcher' ||
-            playerResponse.data.position === 'Reliever' ||
-            playerResponse.data.position === 'Starter') {
-          const pitchingStatsResponse = await PlayerAPI.getPitchingStatsByPlayerId(user.userId, sessionStorage.getItem('token'));
+        if (playerResponse.data.position === 'pitcher' ||
+            playerResponse.data.position === 'reliever' ||
+            playerResponse.data.position === 'starter') {
+          const pitchingStatsResponse = await PlayerAPI.getPitchingStatsByPlayerId(
+            user.userId,
+            sessionStorage.getItem('token')
+          );
           setPitchingStats(pitchingStatsResponse.data);
+        } else {
+          const battingStatsResponse = await PlayerAPI.getBattingStatsByPlayerId(
+            user.userId,
+            sessionStorage.getItem('token')
+          );
+          setBattingStats(battingStatsResponse.data);
         }
 
         setLoading(false);
@@ -52,22 +61,36 @@ const PlayerProfilePage = () => {
 
   return (
     <>
-    <NavigationBar />
-    <Container className="mt-5">
-      <h1 className="mb-4">Player Profile</h1>
-      <PlayerBasicInfo player={player} />
-      <hr />
-      <Row className="mb-4">
-        <Col>
-          <BattingStatistics battingStats={battingStats} />
-        </Col>
-        {pitchingStats && (
+      <NavigationBar />
+      <Container className="mt-5">
+        <h1 className="mb-4">Player Profile</h1>
+        <PlayerBasicInfo player={player} />
+        <hr />
+        <Row className="mb-4">
           <Col>
-            <PitchingStatistics pitchingStats={pitchingStats} />
+            {player.position === 'pitcher' ||
+             player.position === 'reliever' ||
+             player.position === 'starter' ? (
+              <PitchingStatistics pitchingStats={pitchingStats} />
+            ) : (
+              <BattingStatistics battingStats={battingStats} />
+            )}
           </Col>
-        )}
-      </Row>
-    </Container>
+          <Col>
+            {player.position === 'Pitcher' ||
+             player.position === 'Reliever' ||
+             player.position === 'Starter' ? (
+              <PlayerPerFieldPositionStatisticsPitcher
+                positions={PlayerPosition}
+              />
+            ) : (
+              <PlayerPerFieldPositionStatisticsBatter
+                positions={PlayerPosition}
+              />
+            )}
+          </Col>
+        </Row>
+      </Container>
     </>
   );
 };
