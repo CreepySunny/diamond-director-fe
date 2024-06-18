@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Modal, Form, Dropdown } from 'react-bootstrap';
+import { Card, ListGroup, Button, Modal, Form, Dropdown } from 'react-bootstrap';
 import CoachAPI from '../api/CoachAPI';
 import TeamAPI from '../api/TeamAPI';
 
@@ -63,18 +63,23 @@ const TeamCoachList = ({ teamName }) => {
     setShowAddCoachModal(false);
     setSelectedCoach(null);
   };
+
   const handleShowAddCoachModal = () => setShowAddCoachModal(true);
 
   return (
-    <div>
-      <h2>Coaches in Team</h2>
-      <ul>
-        {coaches.map(coach => (
-          <li key={coach.id}>{coach.firstName} {coach.lastName}</li>
-        ))}
-      </ul>
+    <div className="mt-4">
+      <Card>
+        <Card.Header as="h5">Coaches in Team</Card.Header>
+        <ListGroup variant="flush">
+          {coaches.map(coach => (
+            <ListGroup.Item key={coach.id}>
+              {coach.position} - {coach.firstName} {coach.lastName}
+            </ListGroup.Item>
+          ))}
+        </ListGroup>
+      </Card>
       
-      <Button variant="primary" onClick={handleShowAddCoachModal}>
+      <Button variant="primary" className="mt-3" onClick={handleShowAddCoachModal}>
         Add Coach
       </Button>
 
@@ -92,7 +97,7 @@ const TeamCoachList = ({ teamName }) => {
               <Dropdown.Menu>
                 {availableCoaches.map(coach => (
                   <Dropdown.Item key={coach.id} onClick={() => handleSelectCoach(coach)}>
-                    {coach.firstName} {coach.lastName}
+                    {coach.position} - {coach.firstName} {coach.lastName}
                   </Dropdown.Item>
                 ))}
               </Dropdown.Menu>
