@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Modal, Form, Dropdown } from 'react-bootstrap';
+import { Card, ListGroup, Button, Modal, Form, Dropdown } from 'react-bootstrap';
 import TeamAPI from '../api/TeamAPI';
 import PlayerAPI from '../api/PlayerAPI';
 
 const TeamPlayerList = ({ teamName }) => {
-  const [Players, setPlayers] = useState([]);
+  const [players, setPlayers] = useState([]);
   const [showAddPlayerModal, setShowAddPlayerModal] = useState(false);
   const [availablePlayers, setAvailablePlayers] = useState([]);
-  const [selectedPlayer, setselectedPlayer] = useState(null);
+  const [selectedPlayer, setSelectedPlayer] = useState(null);
   const token = sessionStorage.getItem('token');
 
   useEffect(() => {
@@ -16,61 +16,66 @@ const TeamPlayerList = ({ teamName }) => {
   }, [teamName]);
 
   const fetchPlayersInTeam = () => {
-    PlayerAPI.findPlayersFromTeamName(teamName, token)
+    PlayerAPI.getPlayersFromTeamName(teamName, token)
       .then(response => {
         setPlayers(response.data);
       })
       .catch(error => {
-        console.error('Error fetching Players in team:', error);
+        console.error('Error fetching players in team:', error);
       });
   };
 
   const fetchPlayersWithoutTeam = () => {
-    PlayerAPI.findPlayersNoTeam(token)
+    PlayerAPI.getAllPlayersWithNoTeam(token)
       .then(response => {
         setAvailablePlayers(response.data);
       })
       .catch(error => {
-        console.error('Error fetching available Players:', error);
+        console.error('Error fetching available players:', error);
       });
   };
 
   const handleAddPlayer = () => {
     if (!selectedPlayer) {
-      console.error('No Player selected');
+      console.error('No player selected');
       return;
     }
 
     TeamAPI.assignPlayerToTeam(teamName, selectedPlayer.id, token)
       .then(() => {
-          fetchPlayersInTeam();
-          handleCloseAddPlayerModal();
+        fetchPlayersInTeam();
+        handleCloseAddPlayerModal();
       })
       .catch(error => {
-        console.error('Error assigning Player to team:', error);
+        console.error('Error assigning player to team:', error);
       });
   };
 
   const handleSelectPlayer = (player) => {
-    setselectedPlayer(player);
+    setSelectedPlayer(player);
   };
 
   const handleCloseAddPlayerModal = () => {
     setShowAddPlayerModal(false);
-    setselectedPlayer(null);
+    setSelectedPlayer(null);
   };
+
   const handleShowAddPlayerModal = () => setShowAddPlayerModal(true);
 
   return (
-    <div>
-      <h2>Players in Team</h2>
-      <ul>
-        {Players.map(player => (
-          <li key={player.id}>{player.firstName} {player.lastName}</li>
-        ))}
-      </ul>
+    <div className="mt-4">
+      <Card>
+        <Card.Header as="h5">Players in Team</Card.Header>
+        <ListGroup variant="flush">
+          {players.map(player => (
+            <ListGroup.Item key={player.id}>
+              {player.position} - {player.firstName} {player.lastName}
+            </ListGroup.Item>
+          ))}
+        </ListGroup>
+      </Card>
       
-      <Button variant="primary" onClick={handleShowAddPlayerModal}>
+      <Button variant="primary" className="mt-3" onClick={handleShowAddPlayerModal}>
         Add Player
       </Button>
 
