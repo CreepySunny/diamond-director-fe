@@ -9,7 +9,6 @@ const GameSelector = ({  onSelectGame }) => {
 
     useEffect(() => {
         GameAPI.getAllGames().then(response => {
-            console.log(response.data);
             setGames(response.data);
         }).catch(error => {
             console.error('Error fetching games:', error);
