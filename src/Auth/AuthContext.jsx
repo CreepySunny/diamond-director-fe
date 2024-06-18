@@ -26,11 +26,9 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const token = sessionStorage.getItem('token');
-    console.log('AuthProvider useEffect - Token from sessionStorage:', token);
     if (token) {
       try {
         const decodedUser = jwtDecode(token);
-        console.log('AuthProvider useEffect - Decoded User:', decodedUser);
         const currentTime = Date.now() / 1000;
 
         if (decodedUser.exp < currentTime) {
@@ -39,7 +37,6 @@ export const AuthProvider = ({ children }) => {
           console.log('AuthProvider useEffect - Token expired. User set to null.');
         } else {
           setUser(decodedUser);
-          console.log('AuthProvider useEffect - User set:', decodedUser);
         }
       } catch (e) {
         console.error('AuthProvider useEffect - Error decoding token:', e);
@@ -54,7 +51,6 @@ export const AuthProvider = ({ children }) => {
     try {
       const decodedUser = jwtDecode(token);
       setUser(decodedUser);
-      console.log('AuthProvider login - User logged in:', decodedUser);
     } catch (e) {
       console.error('AuthProvider login - Error decoding token on login:', e);
     }
