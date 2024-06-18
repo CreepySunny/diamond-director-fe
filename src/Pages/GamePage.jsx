@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import ScoreKeeper from '../component/ScoreKeeper';
 import NavigationBar from '../component/Navbar';
@@ -6,19 +6,16 @@ import GameList from '../component/GameList';
 import CreateGameForm from '../component/CreateGameForm';
 import GameAPI from '../api/GameAPI';
 import { Button } from 'react-bootstrap';
+import AuthContext from '../Auth/AuthContext';
 
 function GamePage() {
+  const { user } = useContext(AuthContext);
   const [games, setGames] = useState([]);
   const [selectedGame, setSelectedGame] = useState(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
 
   useEffect(() => {
-    const token = sessionStorage.getItem('token');
-    if (token) {
-      const decodedToken = jwtDecode(token);
-      const userEmail = decodedToken.sub;
-      fetchGames(userEmail, token);
-    }
+      fetchGames(user.sub, token);
   }, []);
 
   const fetchGames = (userEmail, token) => {

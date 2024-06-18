@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Form, Button, Container, Row, Col } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import LoginAPI from '../api/LoginAPI';
+import AuthContext from '../Auth/AuthContext';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
 
   const handleUsernameChange = (event) => {
     setEmail(event.target.value);
@@ -28,6 +30,7 @@ const LoginForm = () => {
       const response = await LoginAPI.loginUser(loginCreds);
       if (response.data.accessToken) {
         sessionStorage.setItem('token', response.data.accessToken);
+        login(response.data.accessToken);
         navigate('/');
       } else {
         console.log('Login failed: No access token in response.');

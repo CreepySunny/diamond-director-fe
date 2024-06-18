@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import TeamAPI from '../api/TeamAPI';
-import { jwtDecode } from 'jwt-decode';
+import AuthContext from '../Auth/AuthContext';
 
 const CreateTeamForm = () => {
   const [teamNameState, setteamNameState] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const user = jwtDecode(sessionStorage.getItem('token'));
+  const { user } = useContext(AuthContext);
 
   const handleInputChange = (e) => {
     setteamNameState(e.target.value);

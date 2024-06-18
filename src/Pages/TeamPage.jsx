@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import NavigationBar from "../component/Navbar";
 import { Container } from "react-bootstrap";
 import TeamCoachList from "../component/TeamCoachList";
 import CreateTeamForm from "../component/CreateTeamForm";
 import TeamAPI from "../api/TeamAPI";
-import { jwtDecode } from 'jwt-decode';
 import TeamPlayerList from "../component/TeamPlayerList";
+import AuthContext from "../Auth/AuthContext";
 
 function TeamPage(){
-  const user = jwtDecode(sessionStorage.getItem('token'));
+  const { user } = useContext(AuthContext);
   const [team, setTeam] = useState(null);
   const [loading, setLoading] = useState(true);
 
