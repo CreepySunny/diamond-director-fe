@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PlayerAPI from "../api/PlayerAPI";
-import CoachAPI from "../api/CoachAPI"; // Assuming you have a separate API for coaches
+import CoachAPI from "../api/CoachAPI";
 import { Container, Row, Col, Button, Form, Alert } from 'react-bootstrap';
 
 const RegistrationForm = () => {
@@ -12,7 +12,7 @@ const RegistrationForm = () => {
 
   const handleAccountTypeChange = (type) => {
     setAccountType(type);
-    setReturnMessage(''); // Clear any return messages when account type changes
+    setReturnMessage('');
   };
 
   const handleSubmitPlayer = async (data) => {
@@ -21,8 +21,8 @@ const RegistrationForm = () => {
       if (response.status === 201) {
         setReturnMessage('Account successfully created!');
         setTimeout(() => {
-          navigate('/');
-        }, 5000);
+          navigate('/login');
+        }, 3000);
       } else if (response.status === 400) {
         setReturnMessage('[!] Error: ' + response.statusText);
       } else {
@@ -39,8 +39,8 @@ const RegistrationForm = () => {
       if (response.status === 201) {
         setReturnMessage('Coach account successfully created!');
         setTimeout(() => {
-          navigate('/');
-        }, 5000); 
+          navigate('/login');
+        }, 3000); 
       } else if (response.status === 400) {
         setReturnMessage('[!] Error: ' + response.statusText);
       } else {
@@ -78,7 +78,8 @@ const RegistrationForm = () => {
     } else if (accountType === 'coach') {
       const coachData = {
         ...commonData,
-        isScorekeeper: isScorekeeper,
+        canScoreKeep: isScorekeeper,
+        position: formData.get('coachPosition'),
       };
       await handleSubmitCoach(coachData);
     }
@@ -168,6 +169,7 @@ const RegistrationForm = () => {
               </>
             )}
             {accountType === 'coach' && (
+              <>
               <Form.Group controlId="isScorekeeper">
                 <Form.Check
                   type="checkbox"
@@ -176,6 +178,17 @@ const RegistrationForm = () => {
                   onChange={(e) => setIsScorekeeper(e.target.checked)}
                 />
               </Form.Group>
+              
+              <Form.Group controlId="coachPosition">
+                <Form.Label>Position</Form.Label>
+                <Form.Control as="select" name="coachPosition" required>
+                  <option value="DEFENSE">Defense</option>
+                  <option value="OFFENSE">Offense</option>
+                  <option value="PITCHING">Pitching</option>
+                  <option value="HEAD">Head</option>
+                </Form.Control>
+              </Form.Group>
+              </>
             )}
             <Button variant="primary" type="submit">
               Submit
