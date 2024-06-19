@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Form, Button, Alert } from 'react-bootstrap';
+import { Container, Form, Button, Alert, Col } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import GameAPI from '../api/GameAPI';
 
 import PlayResult from '../Const/PlayResult';
 import PlayerPosition from '../Const/PlayerPosition';
 
-const ScoreKeeper = ({ game }) => {
+const ScoreKeeper = ({ game, onClose }) => {
   const [batter, setBatter] = useState('');
   const [pitcher, setPitcher] = useState('');
   const [inning, setInning] = useState('');
@@ -24,7 +24,6 @@ const ScoreKeeper = ({ game }) => {
       const token = sessionStorage.getItem('token');
       GameAPI.getGameByGameId(game.gameId, token)
         .then(response => {
-          console.log(response.data);
           setGameDetails(response.data);
         })
         .catch(error => {
@@ -32,7 +31,6 @@ const ScoreKeeper = ({ game }) => {
         });
       GameAPI.getAllPlayersFromGameId(game.gameId, token)
         .then(response => {
-          console.log(response.data);
           setPlayers(response.data);
         })
         .catch(error => {
@@ -158,7 +156,7 @@ const ScoreKeeper = ({ game }) => {
             type="radio"
             name="halfOptions"
             id="topHalf"
-            value="top"
+            value="TOP"
             checked={half === 'TOP'}
             onChange={(e) => setHalf(e.target.value)}
           />
@@ -168,7 +166,7 @@ const ScoreKeeper = ({ game }) => {
             type="radio"
             name="halfOptions"
             id="bottomHalf"
-            value="bottom"
+            value="BOTTOM"
             checked={half === 'BOTTOM'}
             onChange={(e) => setHalf(e.target.value)}
           />
@@ -256,6 +254,10 @@ const ScoreKeeper = ({ game }) => {
           Submit Score
         </Button>
       )}
+
+      <Button variant="danger" onClick={onClose} className="mt-3">
+        Close ScoreKeeper
+      </Button>
     </Container>
   );
 };
