@@ -30,7 +30,9 @@ const TeamAPI = {
         getAuthHeaders(token)
     ),
 
-    deleteTeamByTeamName: (teamName, token) => axios.delete(`http://localhost:8080/team/${teamName}`, getAuthHeaders(token))
+    deleteTeamByTeamName: (teamName, token) => axios.delete(`http://localhost:8080/team/${teamName}`, getAuthHeaders(token)),
+
+    searchForTeamUsingName: (teamName) => axios.get(`http://localhost:8080/team/search/${teamName}`)
 }
 
 export default TeamAPI;
