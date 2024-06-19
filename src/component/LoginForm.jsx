@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { Form, Button, Container, Row, Col } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 import LoginAPI from '../api/LoginAPI';
 import AuthContext from '../Auth/AuthContext';
 
@@ -31,7 +32,13 @@ const LoginForm = () => {
       if (response.data.accessToken) {
         sessionStorage.setItem('token', response.data.accessToken);
         login(response.data.accessToken);
-        navigate('/');
+
+        const decodedToken = jwtDecode(response.data.accessToken);
+        if (decodedToken.role === 'PLAYER') {
+          navigate('/player');
+        } else {
+          navigate('/coach-dashboard');
+        }
       } else {
         console.log('Login failed: No access token in response.');
       }
