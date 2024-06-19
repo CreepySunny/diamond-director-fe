@@ -1,4 +1,3 @@
-import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import RegistrationPage from './Pages/RegistrationPage';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
@@ -12,6 +11,8 @@ import PrivateRoute from './Auth/PrivateRoute';
 import Unauthorized from './Pages/Unauthorized';
 import { AuthProvider } from './Auth/AuthContext';
 import PlayerProfilePage from './Pages/PlayerProfilePage';
+import TeamSearchPage from './Pages/TeamSearchPage';
+import CoachDashboardPage from './Pages/CoachDashboardPage';
 
 function App() {
   return (
@@ -21,8 +22,10 @@ function App() {
           <Route path='/' element={<HomePage />} />
           <Route path='/register' element={<RegistrationPage />} />
           <Route path='/login' element={<LoginPage />} />
+          <Route path='/search-teams' element={<TeamSearchPage />} />
           <Route path='/game' element={<PrivateRoute requiredRole="COACH"><GamePage /></PrivateRoute>} />
           <Route path='/team' element={<PrivateRoute requiredRole="COACH"><TeamPage /></PrivateRoute>} />
+          <Route path='/coach-dashboard' element={<PrivateRoute requiredRole="COACH"><CoachDashboardPage /></PrivateRoute>} />
           <Route path='/player' element={<PrivateRoute requiredRole="PLAYER"><PlayerProfilePage /></PrivateRoute>} />
           <Route path='/live' element={<GameScorePage />} />
           <Route path='/unauthorized' element={<Unauthorized />} />
