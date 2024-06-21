@@ -34,7 +34,7 @@ const LoginForm = () => {
         login(response.data.accessToken);
 
         const decodedToken = jwtDecode(response.data.accessToken);
-        if (decodedToken.role === 'PLAYER') {
+        if (decodedToken.roles === 'PLAYER') {
           navigate('/player');
         } else {
           navigate('/coach-dashboard');
