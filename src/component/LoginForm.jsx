@@ -8,6 +8,7 @@ import AuthContext from '../Auth/AuthContext';
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
 
@@ -21,18 +22,18 @@ const LoginForm = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
+  
     try {
       const loginCreds = {
         email: email,
         password: password
       };
-
+  
       const response = await LoginAPI.loginUser(loginCreds);
       if (response.data.accessToken) {
         sessionStorage.setItem('token', response.data.accessToken);
         login(response.data.accessToken);
-
+  
         const decodedToken = jwtDecode(response.data.accessToken);
         if (decodedToken.roles === 'PLAYER') {
           navigate('/player');
@@ -43,9 +44,15 @@ const LoginForm = () => {
         console.log('Login failed: No access token in response.');
       }
     } catch (err) {
-      console.error('Login failed:', err.message);
+      if (err.response && err.response.status === 404) {
+        setError('User not found. Please check your credentials.');
+      } else {
+        setError('Login failed. Please try again later.');
+        console.error('Login failed:', err.message);
+      }
     }
   };
+  
 
   return (
     <Container>
@@ -74,6 +81,8 @@ const LoginForm = () => {
                 required
               />
             </Form.Group>
+
+            {error && <div className="alert alert-danger">{error}</div>}
 
             <Button variant="primary" type="submit" className="w-100">
               Login
