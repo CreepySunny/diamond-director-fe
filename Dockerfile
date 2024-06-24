@@ -1,17 +1,17 @@
 FROM node:latest
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-COPY package*.json ./
+COPY package.json .
 
 RUN npm install
 
+RUN npm i -g serve
+
 COPY . .
-
-EXPOSE 3000
-
-ENV NODE_ENV=production
 
 RUN npm run build
 
-CMD [ "npm", "run", "preview" ]
+EXPOSE 3000
+
+CMD [ "serve", "-s", "dist" ]
