@@ -1,38 +1,33 @@
 import axios from "axios";
-
-const getAuthHeaders = (token) => ({
-    headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-    }
-});
+import baseURL from "./baseURL";
+import AuthHeaders from "./AuthHeaders";
 
 const TeamAPI = {
     createTeam: (newTeam, token) => axios.post(
-        "http://localhost:8080/team",
+        `${baseURL}/team`,
         newTeam ,
-        getAuthHeaders(token)
+        AuthHeaders(token)
     ),
 
-    findTeamFromUserEmail: (email, token) => axios.get(`http://localhost:8080/team/${email}`, getAuthHeaders(token)),
+    findTeamFromUserEmail: (email, token) => axios.get(`${baseURL}/team/${email}`, AuthHeaders(token)),
 
-    findAllTeams: (token) => axios.get("http://localhost:8080/team", getAuthHeaders(token)),
+    findAllTeams: (token) => axios.get(`${baseURL}/team`, AuthHeaders(token)),
 
     assignCoachToTeam: (teamName, coachId, token) => axios.put(
-        "http://localhost:8080/team/assign/coach",
+        `${baseURL}/team/assign/coach`,
         { teamName, coachId },
-        getAuthHeaders(token)
+        AuthHeaders(token)
     ),
 
     assignPlayerToTeam: (teamName, playerId, token) => axios.put(
-        "http://localhost:8080/team/assign/player",
+        `${baseURL}/team/assign/player`,
         { teamName, playerId },
-        getAuthHeaders(token)
+        AuthHeaders(token)
     ),
 
-    deleteTeamByTeamName: (teamName, token) => axios.delete(`http://localhost:8080/team/${teamName}`, getAuthHeaders(token)),
+    deleteTeamByTeamName: (teamName, token) => axios.delete(`${baseURL}/team/${teamName}`, AuthHeaders(token)),
 
-    searchForTeamUsingName: (teamName) => axios.get(`http://localhost:8080/team/search/${teamName}`)
+    searchForTeamUsingName: (teamName) => axios.get(`${baseURL}/team/search/${teamName}`)
 }
 
 export default TeamAPI;

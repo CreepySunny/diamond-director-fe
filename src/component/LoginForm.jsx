@@ -48,7 +48,7 @@ const LoginForm = () => {
         setError('User not found. Please check your credentials.');
       } else {
         setError('Login failed. Please try again later.');
-        console.error('Login failed:', err.message);
+        console.error('Login failed:', err);
       }
     }
   };

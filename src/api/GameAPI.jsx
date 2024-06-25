@@ -1,42 +1,37 @@
 import axios from "axios";
-
-const getAuthHeaders = (token) => ({
-    headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-    }
-});
+import baseURL from "./baseURL";
+import AuthHeaders from "./AuthHeaders";
 
 const GameAPI = {
     createGame: (newGame, token) => axios.post(
-        "http://localhost:8080/game",
+        `${baseURL}/game`,
         newGame,
-        getAuthHeaders(token)
+        AuthHeaders(token)
     ),
 
     getAllGames: () => axios.get(
-        "http://localhost:8080/game/games"
+        `${baseURL}/game/games`
     ),
 
     getAllGamesFromUserEmail: (email, token) => axios.get(
-        `http://localhost:8080/game/${email}/all`,
-        getAuthHeaders(token)
+        `${baseURL}/game/${email}/all`,
+        AuthHeaders(token)
     ),
 
     getGameByGameId: (gameId, token) => axios.get(
-        `http://localhost:8080/game/${gameId}`,
-        getAuthHeaders(token)
+        `${baseURL}/game/${gameId}`,
+        AuthHeaders(token)
     ),
 
     getAllPlayersFromGameId: (gameId, token) => axios.get(
-        `http://localhost:8080/game/players/${gameId}`,
-        getAuthHeaders(token)
+        `${baseURL}/game/players/${gameId}`,
+        AuthHeaders(token)
     ),
 
     addNewGameScore: (scoreRequest, token) => axios.post(
-        "http://localhost:8080/game/score",
+        `${baseURL}/game/score`,
         scoreRequest,
-        getAuthHeaders(token)
+        AuthHeaders(token)
     )
 };
 

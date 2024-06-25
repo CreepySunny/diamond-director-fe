@@ -1,18 +1,12 @@
 import axios from "axios";
-import React from "react";
-
-const getAuthHeaders = (token) => ({
-    headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-    }
-});
+import baseURL from "./baseURL";
+import AuthHeaders from "./AuthHeaders";
 
 const CoachAPI = {
-    createCoach: (newCoach) => axios.post("http://localhost:8080/coach", newCoach),
+    createCoach: (newCoach) => axios.post(`${baseURL}/coach`, newCoach),
 
-    findCoachesFromTeamName: (teamName, token) => axios.get(`http://localhost:8080/coach/team/${teamName}`, getAuthHeaders(token)),
+    findCoachesFromTeamName: (teamName, token) => axios.get(`${baseURL}/coach/team/${teamName}`, AuthHeaders(token)),
 
-    findCoachNoTeam: (token) => axios.get("http://localhost:8080/coach/no-team", getAuthHeaders(token))
+    findCoachNoTeam: (token) => axios.get(`${baseURL}/coach/no-team`, AuthHeaders(token))
 }
 export default CoachAPI;
